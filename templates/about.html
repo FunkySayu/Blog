@@ -1,0 +1,252 @@
+{% extends "base.html" %}
+
+{% block head %}
+<link rel="stylesheet" type="text/css" href="/static/gitgraph.css">
+
+<style>
+.gitgraph-detail {
+    padding-top: 20px;
+    /* width: 60%; */
+}
+
+.anchor {
+    position: absolute;
+    top: -90px;
+}
+
+.gitgraph-detail .js-scrollTo {
+    text-align: left;
+    width: 100%;
+    font-size: 0.8em;
+}
+
+h5 {
+    font-weight: bold;
+    margin: 0 0 5px 0;
+    padding: 0;
+}
+
+h4 span {
+    width: 100px;
+    text-align: center;
+    /* margin: 0 30px; */
+    color: #ccc;
+    padding: 0 10px;
+    background-color: #fff;
+}
+
+h4 {
+    border-bottom: 1px solid #ccc;
+    margin: 30px;
+    line-height: 0.1em;
+}
+</style>
+{% endblock %}
+
+
+{% block content %}
+
+<!-- Header -->
+<div class="row">
+    <a class="anchor" id="top"></a>
+    <div class="col-sm-12">
+        <div class="content-title">
+            <h1><center>Axel <small><i>"FunkySayu"</i></small> Martin</center></h1>
+        </div>
+        <h4>
+            <center>
+                <span><a class="js-scrollTo" href="#experiences">Experiences</a></span>
+                <span><a class="js-scrollTo" href="#education">Education</a></span>
+                <span><a class="js-scrollTo" href="#skills">Skills</a></span>
+                <span><a class="js-scrollTo" href="#contact">Contact</a></span>
+            </center>
+        </h4>
+    </div>
+</div>
+<!-- /Header -->
+
+<canvas id="graph" class="col-12-sm"></canvas>
+
+<!-- Section delimiters -->
+<div id="section-delimiter-experiences" class="gitgraph-detail section-delimiter">
+    <a class="anchor" id="experiences"></a>
+    <a class="js-scrollTo" href="#top">Back to top</a>
+</div>
+<div id="section-delimiter-education" class="gitgraph-detail section-delimiter">
+    <a class="anchor" id="education"></a>
+    <a class="js-scrollTo" href="#top">Back to top</a>
+</div>
+<div id="section-delimiter-skills" class="gitgraph-detail section-delimiter">
+    <a class="anchor" id="skills"></a>
+    <a class="js-scrollTo" href="#top">Back to top</a>
+</div>
+<!-- /Section delimiters -->
+
+<!-- Commit details -->
+<div id="experiences-internship-google" class="gitgraph-detail">
+    <h5>Designed a reporting system for an automation workflow<small>&mdash; <span class="location">Zurich, Switzerland</span></small></h5>
+    <p>Designed and implemented a massively distributed, decentralized SQL database request caching system&nbsp;; leveraged the BitTorrent peer-to-peer protocol to share cache contents between multiple database clients&nbsp;; addressed cache invalidation issues.</p>
+</div>
+
+<div id="experiences-internship-total" class="gitgraph-detail">
+    <h5>Internship in network development <small>&mdash; <span class="location">Total SA</span>, <span class="location">Pau</span></small></h5>
+    <p>Designed and implemented a massively distributed, decentralized SQL database request caching system&nbsp;; leveraged the BitTorrent peer-to-peer protocol to share cache contents between multiple database clients&nbsp;; addressed cache invalidation issues.</p>
+</div>
+
+<div id="experiences-air-eisti" class="gitgraph-detail">
+    <h5>Network administrator <small>&mdash; <span class="location">Students association AIR-EISTI</span>, <span class="location">Pau</span>, <span class="location">France</span></small></h5>
+    <p>Development of network infrastructure for about 100-150 people.</p>
+</div>
+
+<div id="education-eisti-ing" class="gitgraph-detail">
+    <h5>Master and intensive scientific curriculum <small>&mdash; <span class="location">Pau, France</span></small></h5>
+    <p>A leading French Engineering School (Grand école) awarding a Master of Science in Computer Engineering, <span style="location">Pau</span>, <span style="location">France</span>.</p>
+</div>
+
+<div id="education-bac" class="gitgraph-detail">
+    <h5>Equivalent to High School Diploma in Science <small>&mdash; <span class="location">Immaculé Conception Beau-Frêne, Pau, France</span></small></h5>
+    <p>Passed with merits</p>
+</div>
+
+<div id="section-skills-it" class="gitgraph-detail">
+    <b>Web : </b>HTML5/CSS3, Javascript, PHP, Oracle, SQL<br>
+    <b>Programming : </b>C, C++, Go, Python<br>
+    <b>System : </b>Networking, QoS, general administration<br>
+    <b>Office : </b>LaTeX, {Open,Microsoft}Office<br>
+    <b>Misc : </b>Bazel
+</div>
+
+<div id="section-skills-languages" class="gitgraph-detail">
+    <b>Fluent : </b>English, French<br>
+    <b>Basics : </b>Spanish, Japan<br>
+</div>
+
+<div id="section-readme" class="gitgraph-detail">
+    <a class="js-scrollTo" href="#top">Back to top</a><br>
+    funkysayu@gmail.com<br>
+</div>
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+<script src="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js"></script>
+<script src="/static/gitgraph.min.js"></script>
+<script src="/static/js/d3-dispatch.min.js"></script>
+<script src="/static/js/d3.layout.cloud.js"></script>
+
+<script>
+    d3.wordcloud()
+    .size([800, 400])
+    .selector('#wordcloud')
+    .words([{text: 'word', size: 5}, {text: 'cloud', size: 15}])
+    .start();
+</script>
+<script>
+var graph = new GitGraph({
+    template: "metro",
+    elementId: "graph",
+    author: ""
+});
+
+//graph.template.commit.message.font = "normal 24pt Calibri";
+graph.template.branch.spacingX = 40
+//graph.template.commit.spacingY = -50
+
+var experiences = graph.branch({name: "experiences"})
+    .commit({
+        message: "Experiences",
+        messageFont: "normal 24pt Calibri",
+        detailId: "section-delimiter-experiences",
+        messageBranchDisplay: false,
+        messageHashDisplay: false
+    })
+    .commit({
+        message: "Internship at Google (6 months)",
+        detailId: "experiences-internship-google",
+        messageBranchDisplay: false,
+        messageHashDisplay: false
+    })
+
+var aside = graph.branch({name: "netadmin"})
+    .commit({
+        message: "Network administrator for a students association (2 years)",
+        detailId: "experiences-air-eisti",
+        messageBranchDisplay: false,
+        messageHashDisplay: false
+    });
+
+experiences.commit({
+        message: "Internship at Total (4 months)",
+        detailId: "experiences-internship-total",
+        messageBranchDisplay: false,
+        messageHashDisplay: false
+    });
+
+aside.merge(experiences, {
+    message: "Education",
+    messageFont: "normal 24pt Calibri",
+    detailId: "section-delimiter-education",
+    messageBranchDisplay: false,
+    messageHashDisplay: false
+});
+
+var education = graph.branch({name: "education"})
+    .commit({
+        message: "Ecole Internationale des Sciences de Traitement de l'Information (EISTI)",
+        detailId: "education-eisti-ing",
+        messageBranchDisplay: false,
+        messageHashDisplay: false
+    })
+    .commit({
+        message: "Baccalauréat S",
+        detailId: "education-bac",
+        messageBranchDisplay: false,
+        messageHashDisplay: false
+    });
+
+aside.delete()
+
+education.merge(experiences, {
+    message: "Skills",
+    messageFont: "normal 24pt Calibri",
+    detailId: "section-delimiter-skills",
+    messageBranchDisplay: false,
+    messageHashDisplay: false
+});
+
+var skills = graph.branch({name: "netadmin", color: "#ff3385"})
+    .commit({
+        message: "Computer engineering",
+        detailId: "section-skills-it",
+        color: "#ff3385",
+        messageBranchDisplay: false,
+        messageHashDisplay: false
+    })
+    .commit({
+        message: "Languages",
+        detailId: "section-skills-languages",
+        color: "#ff3385",
+        messageBranchDisplay: false,
+        messageHashDisplay: false
+    })
+
+skills.merge(experiences, {
+    message: "Contact",
+    detailId: "section-readme",
+    messageFont: "normal 24pt Calibri",
+    messageBranchDisplay: false,
+    messageHashDisplay: false
+})
+</script>
+
+<script>
+    $(document).ready(function() {
+        $('.js-scrollTo').on('click', function() { // Au clic sur un élément
+            var page = $(this).attr('href'); // Page cible
+            var speed = 750; // Durée de l'animation (en ms)
+            $('html, body').animate( { scrollTop: $(page).offset().top }, speed ); // Go
+            return false;
+        });
+    });
+</script></script>
+
+
+{% endblock %}

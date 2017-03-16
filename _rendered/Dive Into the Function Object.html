@@ -1,0 +1,726 @@
+
+<div class="cell border-box-sizing text_cell rendered">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h1 id="Python:-dive-into-the-functions">Python: dive into the functions<a class="anchor-link" href="#Python:-dive-into-the-functions">&#182;</a></h1><p>Recently I found a <a href="http://eli.thegreenplace.net/">really useful blog</a> and it motivated me to make my own posts about Python and some other technologies. As he said in <a href="http://eli.thegreenplace.net/2003/05/06/why-start-a-weblog">his first post</a>, writing about things you discover helps you to remember how things work, and I hope I wouldn't be too lazy to continue writing :)</p>
+<p>Let's define an easy function.</p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[1]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython2"><pre><span class="k">def</span> <span class="nf">foo</span><span class="p">(</span><span class="n">a</span><span class="o">=</span><span class="p">[]):</span>
+    <span class="n">a</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="mi">5</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">a</span>
+</pre></div>
+
+</div>
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>What does the following code do ?</p>
+<div class="highlight"><pre><span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">xrange</span><span class="p">(</span><span class="mi">4</span><span class="p">):</span>
+    <span class="n">foo</span><span class="p">()</span>
+
+<span class="n">result</span> <span class="o">=</span> <span class="n">foo</span><span class="p">()</span>
+</pre></div>
+<p>For the ones who think that <code>result == [5]</code>, you need to learn some things about Python.</p>
+<p>As you may know, everything in Python is an object. <code>3</code>, <code>3.5</code>, <code>"Hello World"</code>... are objects, but even the types (<code>int</code>, <code>float</code> or <code>type</code>) and the functions are objects. The question is <em>what's a function object ?</em></p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 id="&#160;The-function-object-?">&#160;The function object ?<a class="anchor-link" href="#&#160;The-function-object-?">&#182;</a></h2><p>At this point, you can see that in your globals, the <code>foo</code> name target to a <code>function</code> object :</p>
+<div class="highlight"><pre><span class="o">&gt;&gt;&gt;</span> <span class="nb">globals</span><span class="p">()</span>
+<span class="p">{</span>
+    <span class="c"># .../...</span>
+    <span class="s">&#39;foo&#39;</span><span class="p">:</span> <span class="o">&lt;</span><span class="n">function</span> <span class="n">foo</span> <span class="n">at</span> <span class="mh">0x2b919f6a17d0</span><span class="o">&gt;</span><span class="p">,</span>
+    <span class="c"># .../...</span>
+<span class="p">}</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="nb">type</span><span class="p">(</span><span class="n">foo</span><span class="p">)</span>
+<span class="o">&lt;</span><span class="nb">type</span> <span class="s">&#39;function&#39;</span><span class="o">&gt;</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="k">print</span> <span class="nb">type</span><span class="p">(</span><span class="n">foo</span><span class="p">)</span><span class="o">.</span><span class="n">__doc__</span>
+<span class="n">function</span><span class="p">(</span><span class="n">code</span><span class="p">,</span> <span class="nb">globals</span><span class="p">[,</span> <span class="n">name</span><span class="p">[,</span> <span class="n">argdefs</span><span class="p">[,</span> <span class="n">closure</span><span class="p">]]])</span>
+
+<span class="n">Create</span> <span class="n">a</span> <span class="n">function</span> <span class="nb">object</span> <span class="kn">from</span> <span class="nn">a</span> <span class="nn">code</span> <span class="nn">object</span> <span class="nn">and</span> <span class="nn">a</span> <span class="nn">dictionary.</span>
+<span class="n">The</span> <span class="n">optional</span> <span class="n">name</span> <span class="n">string</span> <span class="n">overrides</span> <span class="n">the</span> <span class="n">name</span> <span class="kn">from</span> <span class="nn">the</span> <span class="nn">code</span> <span class="nn">object.</span>
+<span class="n">The</span> <span class="n">optional</span> <span class="n">argdefs</span> <span class="nb">tuple</span> <span class="n">specifies</span> <span class="n">the</span> <span class="n">default</span> <span class="n">argument</span> <span class="n">values</span><span class="o">.</span>
+<span class="n">The</span> <span class="n">optional</span> <span class="n">closure</span> <span class="nb">tuple</span> <span class="n">supplies</span> <span class="n">the</span> <span class="n">bindings</span> <span class="k">for</span> <span class="n">free</span> <span class="n">variables</span><span class="o">.</span>
+</pre></div>
+<p>Function are first-class object. This means that as any other object you can :</p>
+<ul>
+<li>store it in variables or data structures (i.e. classes)</li>
+<li>compare them with other entities</li>
+<li>pass it as parameter or result of an other function</li>
+<li>construct it at runtime</li>
+<li>print or read it</li>
+<li>manipulate their attributes</li>
+<li>etc...</li>
+</ul>
+<h2 id="The-function-object's-attributes">The function object's attributes<a class="anchor-link" href="#The-function-object's-attributes">&#182;</a></h2>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[2]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython2"><pre><span class="k">print</span> <span class="p">[</span><span class="n">e</span> <span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <span class="nb">dir</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">foo</span><span class="p">))</span> <span class="k">if</span> <span class="ow">not</span> <span class="n">e</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s">&quot;_&quot;</span><span class="p">)]</span>
+</pre></div>
+
+</div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area"><div class="prompt"></div>
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>[&apos;func_closure&apos;, &apos;func_code&apos;, &apos;func_defaults&apos;, &apos;func_dict&apos;, &apos;func_doc&apos;, &apos;func_globals&apos;, &apos;func_name&apos;]
+</pre>
+</div>
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>A function instance is composed of 7 components. This notebook is written with the Python 2.7 interpreter.</p>
+<p>From the <a href="https://docs.python.org/3.0/whatsnew/3.0.html#operators-and-special-methods">What's new in Python 3.0</a> :</p>
+<quote>The function attributes named `func_X` have been renamed to use the `__X__` form, freeing up these names in the function attribute namespace for user-defined attributes.</quote>
+
+<p>So Python 3.x does not support anymore this attributes, and use instead :</p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[3]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython2"><pre><span class="k">print</span> <span class="p">[</span><span class="s">&quot;__</span><span class="si">%s</span><span class="s">__&quot;</span> <span class="o">%</span> <span class="n">e</span><span class="p">[</span><span class="mi">5</span><span class="p">:]</span> <span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <span class="nb">dir</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">foo</span><span class="p">))</span> <span class="k">if</span> <span class="ow">not</span> <span class="n">e</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s">&quot;_&quot;</span><span class="p">)]</span>
+</pre></div>
+
+</div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area"><div class="prompt"></div>
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>[&apos;__closure__&apos;, &apos;__code__&apos;, &apos;__defaults__&apos;, &apos;__dict__&apos;, &apos;__doc__&apos;, &apos;__globals__&apos;, &apos;__name__&apos;]
+</pre>
+</div>
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[4]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython2"><pre><span class="n">public_attributes</span> <span class="o">=</span> <span class="p">(</span><span class="n">e</span> <span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <span class="nb">dir</span><span class="p">(</span><span class="n">foo</span><span class="p">)</span> <span class="k">if</span> <span class="ow">not</span> <span class="n">e</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s">&#39;_&#39;</span><span class="p">)</span> <span class="ow">and</span> <span class="n">e</span> <span class="o">!=</span> <span class="s">&#39;func_globals&#39;</span><span class="p">)</span>
+<span class="k">print</span> <span class="s">&quot;</span><span class="se">\n</span><span class="s">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="s">&quot;</span><span class="si">%-14s</span><span class="s"> : </span><span class="si">%s</span><span class="s">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">e</span><span class="p">,</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">foo</span><span class="p">,</span> <span class="n">e</span><span class="p">))</span> <span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <span class="n">public_attributes</span><span class="p">)</span>
+</pre></div>
+
+</div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area"><div class="prompt"></div>
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>func_closure   : None
+func_code      : &lt;code object foo at 0x13bdbb0, file &quot;&lt;ipython-input-1-a62784216969&gt;&quot;, line 1&gt;
+func_defaults  : ([],)
+func_dict      : {}
+func_doc       : None
+func_name      : foo
+</pre>
+</div>
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h3 id="The-function-describers">The function describers<a class="anchor-link" href="#The-function-describers">&#182;</a></h3><p>The following attributes helps to represent the Python function for the user :</p>
+<ul>
+<li><code>func_name</code> (or <code>__name__</code>) attribute is the original function name. This value is used when you want to represent your object (i.e. in the <code>__repr__</code> method).</li>
+</ul>
+<div class="highlight"><pre><span class="k">def</span> <span class="nf">my_func</span><span class="p">():</span> <span class="k">pass</span>
+    <span class="n">bar</span> <span class="o">=</span> <span class="n">my_func</span>
+    <span class="k">assert</span> <span class="n">bar</span><span class="o">.</span><span class="n">func_name</span> <span class="o">==</span> <span class="n">my_func</span><span class="o">.</span><span class="n">func_name</span> <span class="o">==</span> <span class="s">&quot;my_func&quot;</span>  <span class="c"># True</span>
+    <span class="k">assert</span> <span class="nb">str</span><span class="p">(</span><span class="n">bar</span><span class="p">)</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s">&quot;&lt;function my_func at&quot;</span><span class="p">)</span>  <span class="c"># True</span>
+</pre></div>
+<ul>
+<li><code>func_doc</code> (or <code>__doc__</code>) attribute contains the docstring of your function. This is highly used by some tools such as <a href="http://sphinx-doc.org/">Sphinx</a> (or even the <code>help</code> function) to generate the function's documentation (so don't forget to write your docstring !)</li>
+</ul>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h3 id="The-end-user-storage-properties">The end-user storage properties<a class="anchor-link" href="#The-end-user-storage-properties">&#182;</a></h3><p>Sometimes, it would be useful to mark your function for whatever reasons. If you often use decorateurs, you may heard about the <code>synchronized</code> decorator. This decorator intend to make the same thing as the keyword <code>synchronized</code> in java. In threaded context, sometimes you don't want that two thread access to a function at the same time. The decorator looks like this :</p>
+<div class="highlight"><pre><span class="kn">from</span> <span class="nn">functools</span> <span class="kn">import</span> <span class="n">wraps</span>
+<span class="kn">import</span> <span class="nn">threading</span>
+
+<span class="k">def</span> <span class="nf">synchronized</span><span class="p">(</span><span class="n">func</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; Decorator to make a function thread-safe &quot;&quot;&quot;</span>
+    <span class="n">lock</span> <span class="o">=</span> <span class="n">threading</span><span class="o">.</span><span class="n">Lock</span><span class="p">()</span>
+
+    <span class="nd">@wraps</span><span class="p">(</span><span class="n">func</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">_wrapper</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Wrapper of the function to lock the thread until the lock is acquired &quot;&quot;&quot;</span>
+        <span class="k">with</span> <span class="n">lock</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">func</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">_wrapper</span>
+
+<span class="nd">@synchronized</span>
+<span class="k">def</span> <span class="nf">foo</span><span class="p">():</span>
+    <span class="k">print</span> <span class="s">&quot;I&#39;m synchronized !&quot;</span>
+</pre></div>
+<p>Sounds cool isn't it ? Yes but sometimes, for some reason, you want a specific lock on your function. For example, if you have 2 functions that must have the same lock (reading the same socket for example), a good way could be to register the lock into a shared space and then change a bit your <code>synchronized</code> decorator in order to adapt.</p>
+<p>Good news, you have a end-user dictionary here for registering meta-data of the function (in this example, a lock). This dictionary is known under the <code>func_dict</code> attribute, and here is an example of how to use it.</p>
+<div class="highlight"><pre><span class="k">def</span> <span class="nf">synchronized_v2</span><span class="p">(</span><span class="n">lock</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+    <span class="k">if</span> <span class="n">lock</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+        <span class="n">lock</span> <span class="o">=</span> <span class="n">threading</span><span class="o">.</span><span class="n">Lock</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="nf">_decorator</span><span class="p">(</span><span class="n">func</span><span class="p">):</span>
+        <span class="n">func</span><span class="o">.</span><span class="n">func_dict</span><span class="p">[</span><span class="s">&quot;lock&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">lock</span>
+
+        <span class="nd">@wraps</span><span class="p">(</span><span class="n">func</span><span class="p">)</span>
+        <span class="k">def</span> <span class="nf">_wrapper</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+            <span class="k">with</span> <span class="n">func</span><span class="o">.</span><span class="n">func_dict</span><span class="p">[</span><span class="s">&quot;lock&quot;</span><span class="p">]:</span>
+                <span class="k">return</span> <span class="n">func</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">_wrapper</span>
+    <span class="k">return</span> <span class="n">_decorator</span>
+
+<span class="nd">@synchronized_v2</span><span class="p">()</span>
+<span class="k">def</span> <span class="nf">bar</span><span class="p">():</span> <span class="k">pass</span>
+
+<span class="nd">@synchronized_v2</span><span class="p">(</span><span class="n">bar</span><span class="o">.</span><span class="n">func_dict</span><span class="p">[</span><span class="s">&quot;lock&quot;</span><span class="p">])</span>
+<span class="k">def</span> <span class="nf">joe</span><span class="p">():</span> <span class="k">pass</span>
+</pre></div>
+<p>The functions <code>bar</code> and <code>joe</code> are now synchronized with the same lock.</p>
+<p>With this kind of code, you can easily maintain or change the lock of your function by changing their attribute <code>func_dict["lock"]</code>. This is a good way to deal with that, but there're tons of way to deal with that, as you an see on the <a href="http://blog.dscpl.com.au/2014/01/the-missing-synchronized-decorator.html">Graham Dumpleton's blog</a>.</p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h3 id="A-scope-and-closure-overview">A scope and closure overview<a class="anchor-link" href="#A-scope-and-closure-overview">&#182;</a></h3><p>One of the most important thing of a Python function is its scopes. Before Python 2.2, Python defined 3 scopes :</p>
+<ul>
+<li>the local namespace, which reference all the objects names defined in the block of the function, the class or the method ;</li>
+<li>the global namespace, which reference all the global objects defined in the module ;</li>
+<li>the built-in namespace referencing all the built-in functions.</li>
+</ul>
+<p>This was useful, but not enough. A common issue happens with nested function :</p>
+<div class="highlight"><pre><span class="k">def</span> <span class="nf">outer</span><span class="p">():</span>
+    <span class="n">somevar</span> <span class="o">=</span> <span class="p">[]</span>
+
+    <span class="k">def</span> <span class="nf">inner</span><span class="p">():</span>
+        <span class="n">somevar</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="mi">4</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">somevar</span>
+
+    <span class="k">return</span> <span class="n">inner</span>
+</pre></div>
+<p>The function <code>outer</code> a function generator. It generate the <code>inner</code> function, with a variable <code>somevar</code>. But... What is the scope of this variable ? Obviously, not built-in. In order to be global, the function definition would look like this :</p>
+<div class="highlight"><pre><span class="k">def</span> <span class="nf">outer_global</span><span class="p">():</span>
+    <span class="k">global</span> <span class="n">somevar</span>
+    <span class="n">somevar</span> <span class="o">=</span> <span class="p">[]</span>
+
+    <span class="k">def</span> <span class="nf">inner</span><span class="p">():</span>
+        <span class="k">global</span> <span class="n">somevar</span>
+        <span class="n">somevar</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="mi">4</span><span class="p">)</span>
+        <span class="k">assert</span> <span class="s">&quot;somevar&quot;</span> <span class="ow">in</span> <span class="nb">globals</span><span class="p">()</span> <span class="ow">and</span> <span class="ow">not</span> <span class="s">&quot;somevar&quot;</span> <span class="ow">in</span> <span class="nb">locals</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">somevar</span>
+
+    <span class="k">return</span> <span class="n">inner</span>
+</pre></div>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[5]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython2"><pre><span class="k">def</span> <span class="nf">outer_test</span><span class="p">():</span>
+    <span class="n">somevar</span> <span class="o">=</span> <span class="p">[]</span>
+    
+    <span class="k">def</span> <span class="nf">inner</span><span class="p">():</span>
+        <span class="k">assert</span> <span class="s">&quot;somevar&quot;</span> <span class="ow">in</span> <span class="nb">locals</span><span class="p">()</span>
+        <span class="n">somevar</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="mi">5</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">somevar</span>
+       
+    <span class="k">return</span> <span class="n">inner</span>
+
+<span class="n">inner</span> <span class="o">=</span> <span class="n">outer_test</span><span class="p">()</span>
+<span class="n">inner</span><span class="p">()</span>
+</pre></div>
+
+</div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area"><div class="prompt output_prompt">Out[5]:</div>
+
+
+<div class="output_text output_subarea output_execute_result">
+<pre>[5]</pre>
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>Alright, the assertion has been passed. The overall idea here is to say that all the variable from the outer scope are copied to the current scope (except if the outer scope is the module scope, because we fall into the global namespace).</p>
+<p>Let's see...</p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[6]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython2"><pre><span class="k">def</span> <span class="nf">outer_test_2</span><span class="p">():</span>
+    <span class="n">somevar</span><span class="p">,</span> <span class="n">someothervar</span> <span class="o">=</span> <span class="p">[],</span> <span class="p">[]</span>
+    
+    <span class="k">def</span> <span class="nf">inner</span><span class="p">():</span>
+        <span class="k">assert</span> <span class="s">&quot;somevar&quot;</span> <span class="ow">in</span> <span class="nb">locals</span><span class="p">()</span> <span class="ow">and</span> <span class="s">&quot;someothervar&quot;</span> <span class="ow">in</span> <span class="nb">locals</span><span class="p">()</span>
+        <span class="n">somevar</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="mi">5</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">somevar</span>
+    
+    <span class="k">return</span> <span class="n">inner</span>
+
+<span class="n">inner</span> <span class="o">=</span> <span class="n">outer_test_2</span><span class="p">()</span>
+<span class="n">inner</span><span class="p">()</span>
+</pre></div>
+
+</div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area"><div class="prompt"></div>
+<div class="output_subarea output_text output_error">
+<pre>
+<span class="ansired">---------------------------------------------------------------------------</span>
+<span class="ansired">AssertionError</span>                            Traceback (most recent call last)
+<span class="ansigreen">&lt;ipython-input-6-a0c8881c4412&gt;</span> in <span class="ansicyan">&lt;module&gt;</span><span class="ansiblue">()</span>
+<span class="ansigreen">     10</span> <span class="ansiyellow"></span>
+<span class="ansigreen">     11</span> inner <span class="ansiyellow">=</span> outer_test_2<span class="ansiyellow">(</span><span class="ansiyellow">)</span><span class="ansiyellow"></span>
+<span class="ansigreen">---&gt; 12</span><span class="ansiyellow"> </span>inner<span class="ansiyellow">(</span><span class="ansiyellow">)</span><span class="ansiyellow"></span>
+
+<span class="ansigreen">&lt;ipython-input-6-a0c8881c4412&gt;</span> in <span class="ansicyan">inner</span><span class="ansiblue">()</span>
+<span class="ansigreen">      3</span> <span class="ansiyellow"></span>
+<span class="ansigreen">      4</span>     <span class="ansigreen">def</span> inner<span class="ansiyellow">(</span><span class="ansiyellow">)</span><span class="ansiyellow">:</span><span class="ansiyellow"></span>
+<span class="ansigreen">----&gt; 5</span><span class="ansiyellow">         </span><span class="ansigreen">assert</span> <span class="ansiblue">&quot;somevar&quot;</span> <span class="ansigreen">in</span> locals<span class="ansiyellow">(</span><span class="ansiyellow">)</span> <span class="ansigreen">and</span> <span class="ansiblue">&quot;someothervar&quot;</span> <span class="ansigreen">in</span> locals<span class="ansiyellow">(</span><span class="ansiyellow">)</span><span class="ansiyellow"></span>
+<span class="ansigreen">      6</span>         somevar<span class="ansiyellow">.</span>append<span class="ansiyellow">(</span><span class="ansicyan">5</span><span class="ansiyellow">)</span><span class="ansiyellow"></span>
+<span class="ansigreen">      7</span>         <span class="ansigreen">return</span> somevar<span class="ansiyellow"></span>
+
+<span class="ansired">AssertionError</span>: </pre>
+</div>
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>Okay so it just copy a part of the variable (the variable used in the current scope and defined in the outer scope).</p>
+<p>And what if the variables are not copied ?</p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[7]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython2"><pre><span class="k">def</span> <span class="nf">outer_test_3</span><span class="p">():</span>
+    <span class="n">somevar</span> <span class="o">=</span> <span class="p">[]</span>
+    
+    <span class="k">def</span> <span class="nf">inner_1</span><span class="p">():</span>
+        <span class="n">somevar</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="mi">5</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">somevar</span>
+    
+    <span class="k">def</span> <span class="nf">inner_2</span><span class="p">():</span>
+        <span class="n">somevar</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="mi">6</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">somevar</span>
+    
+    <span class="k">return</span> <span class="n">inner_1</span><span class="p">,</span> <span class="n">inner_2</span>
+
+<span class="n">inner_1</span><span class="p">,</span> <span class="n">inner_2</span> <span class="o">=</span> <span class="n">outer_test_3</span><span class="p">()</span>
+<span class="k">assert</span> <span class="n">inner_1</span><span class="p">()</span> <span class="o">==</span> <span class="p">[</span><span class="mi">5</span><span class="p">]</span>
+<span class="n">inner_2</span><span class="p">()</span>
+</pre></div>
+
+</div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area"><div class="prompt output_prompt">Out[7]:</div>
+
+
+<div class="output_text output_subarea output_execute_result">
+<pre>[5, 6]</pre>
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>Hmm it looks like the variables are just references to the outer scope.</p>
+<p>Let's destroy all your dreams.</p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[8]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython2"><pre><span class="k">del</span> <span class="n">outer_test_3</span>
+
+<span class="k">try</span><span class="p">:</span>
+    <span class="n">_</span> <span class="o">=</span> <span class="n">outer</span><span class="p">()</span>
+<span class="k">except</span> <span class="ne">NameError</span><span class="p">:</span>
+    <span class="k">print</span> <span class="s">&quot;Yes, it does not exists anymore.&quot;</span>
+
+<span class="k">print</span> <span class="n">inner_1</span><span class="p">()</span>
+<span class="k">print</span> <span class="n">inner_2</span><span class="p">()</span>
+</pre></div>
+
+</div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area"><div class="prompt"></div>
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>Yes, it does not exists anymore.
+[5, 6, 5]
+[5, 6, 5, 6]
+</pre>
+</div>
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>As you may know, Python objects have a reference counter. When the reference counter goes to 0, the object is ready to be garbage collected.</p>
+<p>A reference is symbolized by a variable associated to the object, the fact that the object is in another object (for example a list or the attribute of another object) or whatever pointing to this object. Here, the <code>inner</code> function have a local variable <code>somevar</code> pointing to the list created in the <code>outer</code> function. Because it's local, the <code>inner</code>'s <code>somevar</code> variable is automatically unreferenced at the end of function's execution.</p>
+<p>So because we deleted <code>outer</code> function, it looks like nothing reference anymore to the list. And that's not true. Python mechanism create a reference to the object in an attribute of the function, in order to be able to use it in the function and to not garbage collect it. This is known as a function closure.</p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[9]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython2"><pre><span class="k">print</span> <span class="s">&quot;Function closure content  : &quot;</span><span class="p">,</span> <span class="n">function</span><span class="o">.</span><span class="n">func_closure</span>
+<span class="k">print</span> <span class="s">&quot;Closure cell contents     : &quot;</span><span class="p">,</span> <span class="n">function</span><span class="o">.</span><span class="n">func_closure</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">cell_contents</span>
+<span class="k">print</span> <span class="s">&quot;Id of the closure object  : &quot;</span><span class="p">,</span> <span class="nb">id</span><span class="p">(</span><span class="n">function</span><span class="o">.</span><span class="n">func_closure</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">cell_contents</span><span class="p">)</span>
+<span class="k">print</span> <span class="s">&quot;Id of the returned object : &quot;</span><span class="p">,</span> <span class="nb">id</span><span class="p">(</span><span class="n">function</span><span class="p">())</span>
+<span class="k">print</span> <span class="s">&quot;Returned == closure ?     : &quot;</span><span class="p">,</span> <span class="nb">id</span><span class="p">(</span><span class="n">function</span><span class="p">())</span> <span class="o">==</span> <span class="nb">id</span><span class="p">(</span><span class="n">function</span><span class="o">.</span><span class="n">func_closure</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">cell_contents</span><span class="p">)</span>
+</pre></div>
+
+</div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area"><div class="prompt"></div>
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>Function closure content  : </pre>
+</div>
+</div>
+
+<div class="output_area"><div class="prompt"></div>
+<div class="output_subarea output_text output_error">
+<pre>
+<span class="ansired">---------------------------------------------------------------------------</span>
+<span class="ansired">NameError</span>                                 Traceback (most recent call last)
+<span class="ansigreen">&lt;ipython-input-9-03fb8ad932d7&gt;</span> in <span class="ansicyan">&lt;module&gt;</span><span class="ansiblue">()</span>
+<span class="ansigreen">----&gt; 1</span><span class="ansiyellow"> </span><span class="ansigreen">print</span> <span class="ansiblue">&quot;Function closure content  : &quot;</span><span class="ansiyellow">,</span> function<span class="ansiyellow">.</span>func_closure<span class="ansiyellow"></span>
+<span class="ansigreen">      2</span> <span class="ansigreen">print</span> <span class="ansiblue">&quot;Closure cell contents     : &quot;</span><span class="ansiyellow">,</span> function<span class="ansiyellow">.</span>func_closure<span class="ansiyellow">[</span><span class="ansicyan">0</span><span class="ansiyellow">]</span><span class="ansiyellow">.</span>cell_contents<span class="ansiyellow"></span>
+<span class="ansigreen">      3</span> <span class="ansigreen">print</span> <span class="ansiblue">&quot;Id of the closure object  : &quot;</span><span class="ansiyellow">,</span> id<span class="ansiyellow">(</span>function<span class="ansiyellow">.</span>func_closure<span class="ansiyellow">[</span><span class="ansicyan">0</span><span class="ansiyellow">]</span><span class="ansiyellow">.</span>cell_contents<span class="ansiyellow">)</span><span class="ansiyellow"></span>
+<span class="ansigreen">      4</span> <span class="ansigreen">print</span> <span class="ansiblue">&quot;Id of the returned object : &quot;</span><span class="ansiyellow">,</span> id<span class="ansiyellow">(</span>function<span class="ansiyellow">(</span><span class="ansiyellow">)</span><span class="ansiyellow">)</span><span class="ansiyellow"></span>
+<span class="ansigreen">      5</span> <span class="ansigreen">print</span> <span class="ansiblue">&quot;Returned == closure ?     : &quot;</span><span class="ansiyellow">,</span> id<span class="ansiyellow">(</span>function<span class="ansiyellow">(</span><span class="ansiyellow">)</span><span class="ansiyellow">)</span> <span class="ansiyellow">==</span> id<span class="ansiyellow">(</span>function<span class="ansiyellow">.</span>func_closure<span class="ansiyellow">[</span><span class="ansicyan">0</span><span class="ansiyellow">]</span><span class="ansiyellow">.</span>cell_contents<span class="ansiyellow">)</span><span class="ansiyellow"></span>
+
+<span class="ansired">NameError</span>: name &apos;function&apos; is not defined</pre>
+</div>
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h3 id="How-Python-manage-the-closures-?">How Python manage the closures ?<a class="anchor-link" href="#How-Python-manage-the-closures-?">&#182;</a></h3><p>When Python compile a function, at every direct variable reference, the compiler will solve the reference in the following order :</p>
+<ul>
+<li>If the action is an assignation, the reference will be generated at runtime in the locals</li>
+<li>If the action is not an assignation, if an assignation with the same name has been done before, the reference will be resolved at runtime in the locals</li>
+<li>If the action is not an assignation, check if the reference has been made in locals of the outer scope until reaching the global scope, then add a closure associated to this reference</li>
+<li>If the previous case failed, find the reference at runtime in the globals (and raise a <code>NameError</code> if not found).</li>
+</ul>
+<p>Once a closure is detected, a cell will be created in the <code>func_closure</code> attribute of the function, containing the reference to the element, and the name of the element will be bind in the code object as a <code>co_freevars</code> of the <code>inner</code> function, and a <code>co_cellvars</code> of the <code>outer</code> function.</p>
+<p>I will write another article on this, because it's a bit hard to understand, and we need deep analysis on the Python comportement which is not the current subject.</p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h3 id="Closures-side-effects">Closures side effects<a class="anchor-link" href="#Closures-side-effects">&#182;</a></h3><p>Closure also give a not well known issue. If your variable associated to the closure is mutated for some reasons outside of the function, the function will not have the same behavior. Let's see an example :</p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[10]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython2"><pre><span class="k">def</span> <span class="nf">closure_issue</span><span class="p">(</span><span class="n">value</span><span class="p">):</span>
+    <span class="n">funcs</span> <span class="o">=</span> <span class="p">[]</span>
+    
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">xrange</span><span class="p">(</span><span class="mi">3</span><span class="p">):</span>
+        <span class="k">def</span> <span class="nf">my_func</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
+            <span class="k">return</span> <span class="n">x</span> <span class="o">*</span> <span class="n">i</span>
+        <span class="n">funcs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">my_func</span><span class="p">)</span>
+        
+    <span class="k">for</span> <span class="n">func</span> <span class="ow">in</span> <span class="n">funcs</span><span class="p">:</span>
+        <span class="k">print</span> <span class="n">func</span><span class="p">(</span><span class="n">value</span><span class="p">),</span>
+        
+    <span class="k">return</span> <span class="n">funcs</span>
+
+<span class="n">funcs</span> <span class="o">=</span> <span class="n">closure_issue</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+</pre></div>
+
+</div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area"><div class="prompt"></div>
+<div class="output_subarea output_stream output_stdout output_text">
+<pre> 4 4 4
+</pre>
+</div>
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>Here, we expected a result like "0 2 4" and we have a "4 4 4". However, 3 different functions have been created :</p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[11]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython2"><pre><span class="k">assert</span> <span class="nb">id</span><span class="p">(</span><span class="n">funcs</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="o">!=</span> <span class="nb">id</span><span class="p">(</span><span class="n">funcs</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span> <span class="o">!=</span> <span class="nb">id</span><span class="p">(</span><span class="n">funcs</span><span class="p">[</span><span class="mi">2</span><span class="p">])</span>
+</pre></div>
+
+</div>
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>The point is the function closure. For every instance of <code>my_func</code>, <code>i</code> is a closure variable. This means that if <code>i</code> mutate outside of the function, <code>my_func</code>'s <code>i</code> will also mutate. Even if <code>funcs</code> is a list of 3 different functions, all the closures target to the same instance :</p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[12]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython2"><pre><span class="n">closures_contents</span> <span class="o">=</span> <span class="p">[</span><span class="n">func</span><span class="o">.</span><span class="n">func_closure</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">cell_contents</span> <span class="k">for</span> <span class="n">func</span> <span class="ow">in</span> <span class="n">funcs</span><span class="p">]</span>
+<span class="k">assert</span> <span class="nb">id</span><span class="p">(</span><span class="n">closures_contents</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="o">==</span> <span class="nb">id</span><span class="p">(</span><span class="n">closures_contents</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span> <span class="o">==</span> <span class="nb">id</span><span class="p">(</span><span class="n">closures_contents</span><span class="p">[</span><span class="mi">2</span><span class="p">])</span>
+</pre></div>
+
+</div>
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>A way to deal with this kind of issue is to bind the closure as a default parameter.</p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[13]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython2"><pre><span class="k">def</span> <span class="nf">closure_solved</span><span class="p">(</span><span class="n">value</span><span class="p">):</span>
+    <span class="n">funcs</span> <span class="o">=</span> <span class="p">[]</span>
+    
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">xrange</span><span class="p">(</span><span class="mi">3</span><span class="p">):</span>
+        <span class="k">def</span> <span class="nf">my_func</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">i</span><span class="o">=</span><span class="n">i</span><span class="p">):</span>
+            <span class="k">print</span> <span class="s">&quot;Value of i:&quot;</span><span class="p">,</span> <span class="n">i</span><span class="p">,</span> <span class="s">&quot; - Id of i:&quot;</span><span class="p">,</span> <span class="nb">id</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">x</span> <span class="o">*</span> <span class="n">i</span>
+        <span class="n">funcs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">my_func</span><span class="p">)</span>
+    
+    <span class="k">print</span> <span class="s">&quot; &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">func</span><span class="p">(</span><span class="n">value</span><span class="p">))</span> <span class="k">for</span> <span class="n">func</span> <span class="ow">in</span> <span class="n">funcs</span><span class="p">)</span>
+    
+    <span class="k">return</span> <span class="n">funcs</span>
+
+<span class="n">funcs</span> <span class="o">=</span> <span class="n">closure_solved</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+</pre></div>
+
+</div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area"><div class="prompt"></div>
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>Value of i: 0  - Id of i: 9369584
+Value of i: 1  - Id of i: 9369560
+Value of i: 2  - Id of i: 9369536
+0 2 4
+</pre>
+</div>
+</div>
+
+</div>
+</div>
+
+</div>

@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+{% block content %}
+
+{% for year in sorted(notebook_per_years.keys(), reverse=True) %}
+<h3>{{ year }}</h3>
+    <ul>
+        {% for nbk in notebook_per_years[year] %}
+        <li><a href="/notebooks/{{ nbk }}">{{ nbk }}</a></li>
+        {% endfor %}
+    </ul>
+{% endfor %}
+
+{% endblock %}
